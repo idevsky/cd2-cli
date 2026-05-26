@@ -1,0 +1,36 @@
+{
+  "providers": {
+    "minio": {
+      "type": "s3",
+      "endpoint": "http://minio:9000",
+      "access_key": "minioadmin",
+      "secret_key": "minioadmin123",
+      "bucket": "test-bucket",
+      "region": "us-east-1",
+      "use_ssl": false
+    },
+    "webdav": {
+      "type": "webdav",
+      "url": "http://webdav:8080",
+      "username": "admin",
+      "password": "admin123"
+    },
+    "sftp": {
+      "type": "sftp",
+      "host": "sftp",
+      "port": 22,
+      "username": "admin",
+      "password": "admin123",
+      "root_path": "/upload"
+    }
+  },
+  "test_config": {
+    "clouddrive2": {
+      "address": "http://clouddrive2:19798",
+      "username": "admin",
+      "password": "admin123"
+    },
+    "connection_timeout": "30s",
+    "test_timeout": "60s"
+  }
+}

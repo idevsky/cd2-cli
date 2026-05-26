@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  clouddrive2:
+    image: cloudnas/clouddrive2-unstable:latest
+    container_name: clouddrive2-test
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      - CLOUDUSER=admin
+      - CLOUDPASS=admin123
+    volumes:
+      - ./data:/CloudNAS
+      - ./config:/Config
+    ports:
+      - "19798:19798"
+    privileged: true
+    network_mode: bridge
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:19798/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
