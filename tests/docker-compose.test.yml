@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  clouddrive2:
+    image: cloudnas/clouddrive2-unstable:latest
+    container_name: cd2-test
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      - CLOUDUSER=${CD2_USER:-admin}
+      - CLOUDPASS=${CD2_PASS:-admin123}
+    volumes:
+      - ./test-data:/CloudNAS
+      - ./test-config:/Config
+    ports:
+      - "${CD2_PORT:-19798}:19798"
+    privileged: true
+    network_mode: bridge
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:19798/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  minio:
+    image: minio/minio:latest
+    container_name: cd2-minio-test
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin123
+    volumes:
+      - ./test-storage/minio:/data
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  webdav:
+    image: rclone/rclone:latest
+    container_name: cd2-webdav-test
+    environment:
+      - RCLONE_USER_WEBDAV_USER=admin
+      - RCLONE_USER_WEBDAV_PASS=admin123
+    volumes:
+      - ./test-storage/webdav:/data
+      - ./test-config/rclone.conf:/config/rclone/rclone.conf:ro
+    ports:
+      - "${WEBDAV_PORT:-8080}:8080"
+    command: serve webdav /data --addr :8080 --user admin --pass admin123
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-u", "admin:admin123", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  sftp:
+    image: atmoz/sftp:latest
+    container_name: cd2-sftp-test
+    volumes:
+      - ./test-storage/sftp:/home/admin/upload
+    ports:
+      - "${SFTP_PORT:-2222}:22"
+    command: admin:admin123:1001:1001:upload
+    healthcheck:
+      test: ["CMD", "echo", "test"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

@@ -1,0 +1,110 @@
+{
+  "name": "Fix Command Whitelist and Registry Issues",
+  "branchName": "ralph/fix-command-whitelist-and-registry",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Fix local command semantics",
+      "description": "As a user, I want local list/mkdir commands to work on local filesystem only, not call remote gRPC.",
+      "acceptanceCriteria": [
+        "local list uses local filesystem, not gRPC client",
+        "local mkdir uses local filesystem, not gRPC client",
+        "Commands marked as \"local\" are correctly categorized in registry",
+        "go test ./... passes",
+        "go vet ./... passes",
+        "make build succeeds"
+      ],
+      "priority": 1,
+      "passes": true,
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-002",
+      "title": "Fix completion command blocked by whitelist",
+      "description": "As a user, I want completion command to work without whitelist configuration.",
+      "acceptanceCriteria": [
+        "completion bash outputs shell completion script",
+        "completion zsh outputs shell completion script",
+        "No whitelist config file required for completion",
+        "go test ./... passes",
+        "go vet ./... passes",
+        "make build succeeds"
+      ],
+      "priority": 2,
+      "passes": true,
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-003",
+      "title": "Fix whitelist initialization side effects",
+      "description": "As a user, I want local token set to not create whitelist config files.",
+      "acceptanceCriteria": [
+        "local token set does not create whitelist config",
+        "Only whitelist-related commands initialize whitelist config",
+        "Non-whitelist commands skip whitelist initialization entirely",
+        "go test ./... passes",
+        "go vet ./... passes",
+        "make build succeeds"
+      ],
+      "priority": 3,
+      "passes": true,
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-004",
+      "title": "Support alias in whitelist enable/disable",
+      "description": "As a user, I want to enable/disable commands using their alias names.",
+      "acceptanceCriteria": [
+        "whitelist enable storage.add.s3 enables cloudapi.login-s3 (alias group)",
+        "whitelist disable cloudapi.login-s3 disables storage.add.s3 (canonical)",
+        "whitelist status shows both requested ID and canonical ID",
+        "go test ./... passes",
+        "go vet ./... passes",
+        "make build succeeds"
+      ],
+      "priority": 4,
+      "passes": true,
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-005",
+      "title": "Prevent duplicate command IDs in registry",
+      "description": "As a developer, I want registry to panic on duplicate command IDs to catch bugs early.",
+      "acceptanceCriteria": [
+        "MustRegister panics on duplicate ID",
+        "Register allows override (for test compatibility)",
+        "registry_init.go uses MustRegister for all commands",
+        "go test ./... passes",
+        "go vet ./... passes",
+        "make build succeeds"
+      ],
+      "priority": 5,
+      "passes": true,
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-006",
+      "title": "Fix upload failure resource leak",
+      "description": "As a user, I want failed uploads to properly close remote file handles.",
+      "acceptanceCriteria": [
+        "Upload errors close file handle before returning",
+        "No orphaned file handles after upload failure",
+        "go test ./... passes",
+        "go vet ./... passes",
+        "make build succeeds"
+      ],
+      "priority": 6,
+      "passes": true,
+      "dependsOn": [],
+      "completionNotes": "Completed by agent"
+    }
+  ],
+  "metadata": {
+    "updatedAt": "2026-05-26T02:44:45.819Z"
+  }
+}
